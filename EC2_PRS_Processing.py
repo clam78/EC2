@@ -178,9 +178,9 @@ ax.imshow(img_orig1Liq)
     
 # Hole locations
 # 5x2 rows = 10 holes ; Ind 0 to 9
-x1 = np.tile(1000 + 300*np.arange(5),2)
-y1 = np.array( [ [(1500 + 300*i)]*5 for i in range(2)] ).flatten()
-r1 = np.ones(len(x1))*100
+x1 = np.array( [ [(1160 + 350*i)]*5 for i in range(2)] ).flatten()
+y1 = np.tile(1605 + 368*np.arange(5),2)
+r1 = np.ones(len(x1))*100 #is this necessary?
 
 # Equal aspect so circles look circular
 ax.set_aspect('equal')
@@ -188,13 +188,11 @@ ax.set_aspect('equal')
 ax.imshow(img_orig1Liq)
 # Now, loop through coord arrays, and create a circle at each x,y pair
 
-xy = (x1[0], y1[0]) #takes the first element of the arrays x1 and y1
-# circ = matplotlib.patches.Circle(xy,100)
-# ax.add_patch(circ)
-
-cv2.circle(img_orig1Liq, xy, 100, color = (255, 0, 0), thickness = 10)
+for i in range(10):
+    xy = (x1[i], y1[i])
+    cv2.circle(img_orig1Liq, xy, 120, color = (255, 0, 0), thickness = 10)
 cv2.imshow('Circle', img_orig1Liq)
-cv2.waitKey(0)
+cv2.waitKey(5000)
 cv2.destroyAllWindows()
 
 # fig, ax = plt.subplots(1,1,figsize=(12, 12))
