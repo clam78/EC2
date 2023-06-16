@@ -14,6 +14,7 @@ Created on Wed Jun 14 12:14:30 2023
 
 import numpy as np
 import cv2
+import matplotlib
 import matplotlib.pyplot as plt
 from scipy.spatial import distance
 # from PIL import Image, ImageDraw
@@ -186,22 +187,19 @@ ax.set_aspect('equal')
 # Show the image
 ax.imshow(img_orig1Liq)
 # Now, loop through coord arrays, and create a circle at each x,y pair
-circ = plt.patches.Circle((x1,y1),100)
-ax.add_patch(circ)
 
+xy = (x1[0], y1[0]) #takes the first element of the arrays x1 and y1
+# circ = matplotlib.patches.Circle(xy,100)
+# ax.add_patch(circ)
 
-
+cv2.circle(img_orig1Liq, xy, 100, color = (255, 0, 0), thickness = 10)
+cv2.imshow('Circle', img_orig1Liq)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 # fig, ax = plt.subplots(1,1,figsize=(12, 12))
 # # plt.title('Select the 4 edges of the sample', fontweight ="bold")
 # ax.imshow(img_orig1Liq)
-    
-
-
-
-
-
-
 
 
 
