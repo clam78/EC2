@@ -171,29 +171,33 @@ Y = Y3d[:,:,0] # 2d slice
 # plt.imshow(Y)
    
 # Plot the image
-fig, ax = plt.subplots(1,1,figsize=(12, 12))
+fig, ax = plt.subplots(1,1,figsize=(10, 7))
 plt.title('Select the 4 edges of the sample', fontweight ="bold")
 ax.imshow(img_orig1Liq)
 # ax.imshow(cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE))
     
 # Hole locations
 # 5x2 rows = 10 holes ; Ind 0 to 9
-x1 = np.array( [ [(1160 + 350*i)]*5 for i in range(2)] ).flatten()
+x1 = np.array( [ [(1160 + 375*i)]*5 for i in range(2)] ).flatten()
 y1 = np.tile(1605 + 368*np.arange(5),2)
 r1 = np.ones(len(x1))*100 #is this necessary?
 
 # Equal aspect so circles look circular
 ax.set_aspect('equal')
 # Show the image
-ax.imshow(img_orig1Liq)
+# ax.imshow(img_orig1Liq)
 # Now, loop through coord arrays, and create a circle at each x,y pair
 
 for i in range(10):
     xy = (x1[i], y1[i])
-    cv2.circle(img_orig1Liq, xy, 120, color = (255, 0, 0), thickness = 10)
-cv2.imshow('Circle', img_orig1Liq)
-cv2.waitKey(5000)
-cv2.destroyAllWindows()
+    circle = plt.Circle(xy, 115, color='red', linewidth=0.5, fill=False)
+    ax.add_patch(circle)
+plt.show()
+#     cv2.circle(img_orig1Liq, xy, 120, color = (255, 0, 0), thickness = 10)
+# cv2.imshow('Circle', img_orig1Liq)
+# cv2.waitKey(5000)
+# cv2.destroyAllWindows()
+# cv2.resizeWindow("Resize", 100, 100)
 
 # fig, ax = plt.subplots(1,1,figsize=(12, 12))
 # # plt.title('Select the 4 edges of the sample', fontweight ="bold")
