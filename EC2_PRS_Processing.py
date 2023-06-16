@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Fri Jun 16 13:41:02 2023
+
+@author: 19166
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Thu Jun 15 15:43:38 2023
 
 @author: 19166
@@ -162,8 +169,8 @@ plt.show()
 # selecting pixels (and get their R,G,B) only from wax sample: add a mask
 # 1. extract X,Y pixel coordinates to each pixel
 Y3d, X3d, Z3d = np.meshgrid(np.arange(img_orig1Liq.shape[0]), np.arange(img_orig1Liq.shape[1]), np.arange(img_orig1Liq.shape[2]), indexing='ij')
-X = X3d[:,:,0] # 2d slice
-Y = Y3d[:,:,0] # 2d slice
+X1 = X3d[:,:,0] # 2d slice
+Y1 = Y3d[:,:,0] # 2d slice
 
 # to plot both X and Y to make sure the values are what is expected
 # I don't know if it's what we should expect: creates a colorful gradient of purple, blue, green, yellow
@@ -181,18 +188,47 @@ ax.imshow(img_orig1Liq)
 x1 = np.array( [ [(1160 + 375*i)]*5 for i in range(2)] ).flatten()
 y1 = np.tile(1605 + 368*np.arange(5),2)
 r1 = np.ones(len(x1))*100 #is this necessary?
-
-# Equal aspect so circles look circular
-ax.set_aspect('equal')
-# Show the image
-# ax.imshow(img_orig1Liq)
-# Now, loop through coord arrays, and create a circle at each x,y pair
-
+radius1 = 115
 for i in range(10):
     xy = (x1[i], y1[i])
     circle = plt.Circle(xy, 115, color='red', linewidth=0.5, fill=False)
     ax.add_patch(circle)
 plt.show()
+
+# Equal aspect so circles look circular
+# ax.set_aspect('equal')
+# Show the image
+# ax.imshow(img_orig1Liq)
+# Now, loop through coord arrays, and create a circle at each x,y pair
+
+# grid of coordinates for image
+
+# X1,Y1 = np.meshgrid(np.arange(img_orig1Liq.shape[1]), np.arange(img_orig1Liq.shape[0]))
+
+# create mask:
+mask = np.zeros_like(img_orig1Liq[:,:,0], dtype = bool)
+for i in range(10):
+    circle_mask = (X1 - x1[i])**2 + (Y1 - y1[i])**2 <= radius1**2
+    mask |= circle_mask
+
+#print mask and get data type & dimensions
+print(f"Mask: {mask}")
+print(f"Data type: {mask.dtype}")
+print(f"Dimensions: {mask.shape}")
+
+# apply mask to RBG image to get pixel values within mask
+RL = imgLR[mask]
+GL = imgLG[mask]
+BL = imgLB[mask]
+
+# save those pixels:
+np.save("RL.npy", RL)
+np.save("GL.npy", GL)
+np.save("BL.npy", BL)
+
+
+
+
 #     cv2.circle(img_orig1Liq, xy, 120, color = (255, 0, 0), thickness = 10)
 # cv2.imshow('Circle', img_orig1Liq)
 # cv2.waitKey(5000)
@@ -205,67 +241,122 @@ plt.show()
 
 
 
-# ### Solid form!
-# # Reading images from Google Drive 
-# # Read image response
-# import requests
-# # Full url on google drive
+### Solid form!
+# Reading images from Google Drive 
+# Read image response
+import requests
+# Full url on google drive
+url = 'https://drive.google.com/file/d/1i4M6QGxhA2kVrvWhqfTl3u7Kb5gDTXUv/view?usp=sharing'
 # url = 'https://drive.google.com/file/d/1i4M6QGxhA2kVrvWhqfTl3u7Kb5gDTXUv/view?usp=sharing'
-# # url = 'https://drive.google.com/file/d/1i4M6QGxhA2kVrvWhqfTl3u7Kb5gDTXUv/view?usp=sharing'
-# # Extract file id to format url
-# file_id = url.split('/')[-2]
-# download_url = 'https://drive.google.com/uc?id=' + file_id
-# # Get response
-# response = requests.get(download_url)
-# img_array = np.frombuffer(response.content, np.uint8)
-# img_orig2 = cv2.imdecode(img_array, cv2.IMREAD_COLOR) # Decoded image
+# Extract file id to format url
+file_id = url.split('/')[-2]
+download_url = 'https://drive.google.com/uc?id=' + file_id
+# Get response
+response = requests.get(download_url)
+img_array = np.frombuffer(response.content, np.uint8)
+img_orig2 = cv2.imdecode(img_array, cv2.IMREAD_COLOR) # Decoded image
 
-# # show image. Needs color correction
-# img1plot = plt.imshow(img_orig2)
+# show image. Needs color correction
+img1plot = plt.imshow(img_orig2)
 
-# #convert to color. Image should be corrected
-# img_orig1Solid = cv2.cvtColor(img_orig2,cv2.COLOR_BGR2RGB)
-# img1SolidPlot = plt.imshow(img_orig1Solid)
+#convert to color. Image should be corrected
+img_orig1Solid = cv2.cvtColor(img_orig2,cv2.COLOR_BGR2RGB)
+img1SolidPlot = plt.imshow(img_orig1Solid)
 
-# # separate into r,g,b
-# imgSR = img_orig1Solid[:,:,0]; imgSG = img_orig1Solid[:,:,1]; imgSB = img_orig1Solid[:,:,2];
-# # img1SR = plt.imshow(imgR, cmap = "gray")    #plots R, G, and B band images separately. cmap can be messed with
-# # plt.title("Img2 R Band")
-# # plt.show()                                  #ultimately we will want to make subplots, all in the same line
-# # img1SG = plt.imshow(imgG)
-# # plt.title("Img2 G Band")
-# # plt.show()
-# # img1SB = plt.imshow(imgB)
-# # plt.title("Img2 B Band")
-# # plt.show()
-
-# fig = plt.figure(figsize=(10, 7))
-# # setting values to rows and column variables
-# rows = 1
-# columns = 3
-  
-# # Adds a subplot at the 1st position
-# fig.add_subplot(rows, columns, 1)
-  
-# # showing image
-# plt.imshow(imgSR, cmap="gray")
-# plt.axis('off')
+# separate into r,g,b
+imgSR = img_orig1Solid[:,:,0]; imgSG = img_orig1Solid[:,:,1]; imgSB = img_orig1Solid[:,:,2];
+# img1SR = plt.imshow(imgR, cmap = "gray")    #plots R, G, and B band images separately. cmap can be messed with
 # plt.title("Img2 R Band")
-  
-# # Adds a subplot at the 2nd position
-# fig.add_subplot(rows, columns, 2)
-  
-# # showing image
-# plt.imshow(imgSG, cmap="gray")
-# plt.axis('off')
+# plt.show()                                  #ultimately we will want to make subplots, all in the same line
+# img1SG = plt.imshow(imgG)
 # plt.title("Img2 G Band")
-  
-# # Adds a subplot at the 3rd position
-# fig.add_subplot(rows, columns, 3)
-  
-# # showing image
-# plt.imshow(imgSB, cmap="gray")
-# plt.axis('off')
+# plt.show()
+# img1SB = plt.imshow(imgB)
 # plt.title("Img2 B Band")
+# plt.show()
+
+fig = plt.figure(figsize=(10, 7))
+# setting values to rows and column variables
+rows = 1
+columns = 3
+  
+# Adds a subplot at the 1st position
+fig.add_subplot(rows, columns, 1)
+  
+# showing image
+plt.imshow(imgSR, cmap="gray")
+plt.axis('off')
+plt.title("Img2 R Band")
+  
+# Adds a subplot at the 2nd position
+fig.add_subplot(rows, columns, 2)
+  
+# showing image
+plt.imshow(imgSG, cmap="gray")
+plt.axis('off')
+plt.title("Img2 G Band")
+  
+# Adds a subplot at the 3rd position
+fig.add_subplot(rows, columns, 3)
+  
+# showing image
+plt.imshow(imgSB, cmap="gray")
+plt.axis('off')
+plt.title("Img2 B Band")
+
+plt.show()
+
+Y3d2, X3d2, Z3d2 = np.meshgrid(np.arange(img_orig1Solid.shape[0]), np.arange(img_orig1Solid.shape[1]), np.arange(img_orig1Solid.shape[2]), indexing='ij')
+X2 = X3d2[:,:,0] # 2d slice
+Y2 = Y3d2[:,:,0] # 2d slice
+   
+# Plot the image
+fig, ax = plt.subplots(1,1,figsize=(10, 7))
+plt.title('Select the 4 edges of the sample', fontweight ="bold")
+ax.imshow(img_orig1Solid)
+# ax.imshow(cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE))
+    
+# Hole locations
+# 5x2 rows = 10 holes ; Ind 0 to 9
+x2 = np.array( [ [(1155 + 378*i)]*5 for i in range(2)] ).flatten()
+y2 = np.tile(1475 + 400*np.arange(5),2)
+r2 = np.ones(len(x1))*100 #is this necessary?
+radius2 = 115
+for i in range(10):
+    xy = (x2[i], y2[i])
+    circle = plt.Circle(xy, 115, color='red', linewidth=0.5, fill=False)
+    ax.add_patch(circle)
+plt.show()
+
+# Equal aspect so circles look circular
+# ax.set_aspect('equal')
+# Show the image
+# ax.imshow(img_orig1Liq)
+# Now, loop through coord arrays, and create a circle at each x,y pair
+
+# grid of coordinates for image
+
+# X2,Y2 = np.meshgrid(np.arange(img_orig1Liq.shape[1]), np.arange(img_orig1Liq.shape[0]))
+
+# create mask:
+mask2 = np.zeros_like(img_orig1Liq[:,:,0], dtype = bool)
+for i in range(10):
+    circle_mask = (X2 - x2[i])**2 + (Y2 - y2[i])**2 <= radius2**2
+    mask2 |= circle_mask
+
+#print mask and get data type & dimensions
+print(f"Mask: {mask2}")
+print(f"Data type: {mask2.dtype}")
+print(f"Dimensions: {mask2.shape}")
+
+# apply mask to RBG image to get pixel values within mask
+RS = imgSR[mask]
+GS = imgSG[mask]
+BS = imgSB[mask]
+
+# save those pixels:
+np.save("RS.npy", RS)
+np.save("GS.npy", GS)
+np.save("BS.npy", BS)
 
 
